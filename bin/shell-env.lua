@@ -19,6 +19,14 @@ read_conf = function(filename) -- return variables table
   return envs
 end
 
+export_vars = function(vars) --return result string to putting shell
+  str = ""
+  for k,v in pairs(vars) do
+    str = str .. "export " .. k .. "=" .. v .. ";"
+  end
+  return str
+end
+
 find_conf = function (conf_name)
 	make_lev_up = function (path)
 		if (path == "/") then return path end		--check for root path
