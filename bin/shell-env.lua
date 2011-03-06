@@ -15,14 +15,9 @@ read_env = function(filename)
 end
 
 find_conf = function (conf_name)
-	make_lev_up = function (path) --FIXME make it easy(regexp?)
+	make_lev_up = function (path)
 		if (path == "/") then return path end		--check for root path
-		path = path:sub(1,path:len()-1)
-		path = path:reverse()
-		char_num = path:find("/")
-		path = path:sub(char_num)
-		path = path:reverse()
-		path = path:sub(1,path:len())
+		path = path:gsub("[^/]*/$","")
 		return path
 	end
 
