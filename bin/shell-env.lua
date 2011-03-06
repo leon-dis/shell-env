@@ -4,14 +4,19 @@ require "posix"
 
 print ("lua shell-env")
 
-read_env = function(filename)
+read_conf = function(filename) -- return variables table
   local f=io.open(filename)
+  envs = {}
   if f ~= nil then
     for line in f:lines() do
-        print (line) 
+        k,v = line:match( "export[ ]+([A-Za-z_]+)=(.*)" )
+        if k and v then
+          envs[k] = v
+        end
     end
     f:close()
   end
+  return envs
 end
 
 find_conf = function (conf_name)
