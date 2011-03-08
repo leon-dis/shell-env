@@ -2,6 +2,10 @@
 require "lfs"
 require "posix"
 
+sys_config_name = ".envrc"
+sys_env_path = "SHELLENV"
+sys_env_backup = "SHELLENV_BACKUP"
+
 print ("lua shell-env")
 
 read_conf = function(filename) -- return variables table
@@ -25,6 +29,38 @@ export_vars = function(vars) --return result string to putting shell
     str = str .. "export " .. k .. "=" .. v .. ";"
   end
   return str
+end
+
+serial_vars = function (env)
+  res_str = ""
+  for k,v in pairs(env) do
+    res_str = res_str .. k .. "," .. string.len(v) .. "," .. v .. ";"
+  end
+  return res_str
+end
+
+deserial_vars = function (str) --TODO do it in C
+  start_pos = 1
+  pos = 0
+  end_pos = 0
+  size_value = 0
+  str_len = str:len()
+  env = {}
+  repeat
+    end_pos = string.find(str,",",start_pos)
+    var_name = str:sub(start_pos,end_pos-1)
+
+    start_pos = end_pos + 1
+    end_pos = string.find(str,",",start_pos)
+    size_value = tonumber(string.sub(str,start_pos,end_pos-1))
+
+    start_pos = end_pos + 1
+    end_pos = start_pos + size_value - 1
+    var_value = str:sub(start_pos,end_pos)
+    start_pos = end_pos + 1 + 1
+    env[var_name] = var_value
+  until (start_pos >= str_len)
+  return env
 end
 
 find_conf = function (conf_name)
