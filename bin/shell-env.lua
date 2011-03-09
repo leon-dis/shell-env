@@ -62,25 +62,24 @@ deserial_vars = function (str) --TODO do it in C
   return env
 end
 
-find_conf = function (conf_name)
+find_conf = function ()--find directory of conf_file
 	make_lev_up = function (path)
 		if (path == "/") then return path end		--check for root path
-		path = path:gsub("[^/]*/$","")
+		path = path:gsub("/[^/]+$","")
 		return path
 	end
 
   cur_dir = posix.getcwd ()
 	if (cur_dir ~= "/") then cur_dir = cur_dir .. "/" end
 
- 	--root_dir =  posix.getenv ("HOME") .. "/" -- high level directory for searching config file
-  root_dir = "/"
+  root_dir =  posix.getenv ("HOME")
   max_dep = 10
 	cur_dep = 0
 	ready_path = nil
 	repeat
-		finfo = posix.stat(cur_dir .. conf_name)
+		finfo = posix.stat(cur_dir .. "/" .. sys_config_name)
 	  if (finfo ~= nil and finfo.type == "regular") then
-			ready_path = cur_dir .. conf_name
+			ready_path = cur_dir
 		end
 		-- go to level up
 		cur_dir = make_lev_up(cur_dir)
