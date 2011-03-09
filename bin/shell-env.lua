@@ -1,5 +1,4 @@
 #!/usr/bin/env lua
-require "lfs"
 require "posix"
 
 sys_config_name = ".envrc"
@@ -70,7 +69,7 @@ find_conf = function (conf_name)
 		return path
 	end
 
-  cur_dir = lfs.currentdir ()
+  cur_dir = posix.getcwd ()
 	if (cur_dir ~= "/") then cur_dir = cur_dir .. "/" end
 
  	--root_dir =  posix.getenv ("HOME") .. "/" -- high level directory for searching config file
