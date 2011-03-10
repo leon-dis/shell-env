@@ -21,9 +21,9 @@ echo "Patching lua and copyng posix module"
 echo "Building lua-5.1.4"
 (cd lua-5.1.4 && make linux && make INSTALL_TOP=$PREFIX install)
 
-echo "Install shell-env.lua"
-install -d $PREFIX/bin/
-install shell-env.lua $PREFIX/bin/
+#echo "Install shell-env.lua"
+#install -d $PREFIX/bin/
+#install shell-env.lua $PREFIX/bin/
 
 echo "Build and install shell-env.bin"
 (PREFIX=$PREFIX make)
