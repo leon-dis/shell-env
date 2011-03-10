@@ -11,7 +11,7 @@ read_conf = function(filename) -- return variables table
 	envs = {}
   if f ~= nil then
     for line in f:lines() do
-				k,v = line:match( "export[ ]+([A-Za-z_]+)=(.*)" )
+				k,v = line:match( "export[ ]+([A-Za-z_0-9]+)=(.*)" )
 				if k and v then
 					envs[k] = v
 				end
