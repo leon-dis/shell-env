@@ -1,0 +1,51 @@
+diff -ru lua-5.1.4_orig/src/linit.c lua-5.1.4_new/src/linit.c
+--- lua-5.1.4_orig/src/linit.c	2007-12-27 16:02:25.000000000 +0300
++++ lua-5.1.4_new/src/linit.c	2011-03-10 13:07:34.131090213 +0300
+@@ -23,6 +23,7 @@
+   {LUA_STRLIBNAME, luaopen_string},
+   {LUA_MATHLIBNAME, luaopen_math},
+   {LUA_DBLIBNAME, luaopen_debug},
++  {LUA_POSIXLIBNAME, luaopen_posix},
+   {NULL, NULL}
+ };
+ 
+diff -ru lua-5.1.4_orig/src/lualib.h lua-5.1.4_new/src/lualib.h
+--- lua-5.1.4_orig/src/lualib.h	2007-12-27 16:02:25.000000000 +0300
++++ lua-5.1.4_new/src/lualib.h	2011-03-10 13:04:11.654086181 +0300
+@@ -39,6 +39,8 @@
+ #define LUA_LOADLIBNAME	"package"
+ LUALIB_API int (luaopen_package) (lua_State *L);
+ 
++#define LUA_POSIXLIBNAME "posix"
++LUALIB_API int luaopen_posix(lua_State *L);
+ 
+ /* open all previous libraries */
+ LUALIB_API void (luaL_openlibs) (lua_State *L); 
+diff -ru lua-5.1.4_orig/src/Makefile lua-5.1.4_new/src/Makefile
+--- lua-5.1.4_orig/src/Makefile	2008-01-19 22:37:58.000000000 +0300
++++ lua-5.1.4_new/src/Makefile	2011-03-10 13:04:11.654086181 +0300
+@@ -27,7 +27,7 @@
+ 	lobject.o lopcodes.o lparser.o lstate.o lstring.o ltable.o ltm.o  \
+ 	lundump.o lvm.o lzio.o
+ LIB_O=	lauxlib.o lbaselib.o ldblib.o liolib.o lmathlib.o loslib.o ltablib.o \
+-	lstrlib.o loadlib.o linit.o
++	lstrlib.o loadlib.o linit.o lposix.o
+ 
+ LUA_T=	lua
+ LUA_O=	lua.o
+@@ -96,7 +96,7 @@
+ 	$(MAKE) all MYCFLAGS=
+ 
+ linux:
+-	$(MAKE) all MYCFLAGS=-DLUA_USE_LINUX MYLIBS="-Wl,-E -ldl -lreadline -lhistory -lncurses"
++	$(MAKE) all MYCFLAGS=-DLUA_USE_LINUX MYLIBS="-Wl,-E -ldl -lreadline -lhistory -lncurses -lrt -lcrypt"
+ 
+ macosx:
+ 	$(MAKE) all MYCFLAGS=-DLUA_USE_LINUX MYLIBS="-lreadline"
+@@ -178,5 +178,6 @@
+   lzio.h
+ print.o: print.c ldebug.h lstate.h lua.h luaconf.h lobject.h llimits.h \
+   ltm.h lzio.h lmem.h lopcodes.h lundump.h
++posix.o: lposix.c
+ 
+ # (end of Makefile)
