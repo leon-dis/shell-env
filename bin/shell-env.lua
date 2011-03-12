@@ -6,7 +6,20 @@ sys_config_name = ".envrc"
 sys_env_path = "SHELLENV" -- store current config path
 sys_env_backup = "SHELLENV_BACKUP"
 
-read_conf = function(filename) -- return variables table
+read_conf = function(filename)
+	--first test config for correct
+	run_test = "/bin/sh -c \"set -e; . " .. filename .. "\""
+	res = os.execute(run_test)
+	if res == 0 then
+		return ". " .. filename
+	else
+		return nil
+	end
+end
+
+read_conf_old = function(filename) -- return variables table
+	
+	--Waring, this function wrong read variables  whose cosist \n
 	local f=io.open(filename)
 	envs = {}
   if f ~= nil then
@@ -136,14 +149,14 @@ if env_cur_dir == nil then		--if sys_env_path if not defined
 		str = serial_vars(env)
 		run_str = " export " .. sys_env_backup .. "=\"" .. str .. "\"" .. ";"
 		run_str = run_str .. " export " .. sys_env_path .. "=" .. cur_conf .. ";" --and define sys_env_path
-		env_new = read_conf(cur_conf .. "/" .. sys_config_name )
+		envrc_vars = read_conf(cur_conf .. "/" .. sys_config_name )
 		--load new_env
-		for k,v in pairs(env_new) do
-			run_str = run_str .. " export "  .. k .. "=" .. v .. ";"
+		if envrc_vars ~= nil then
+			run_str = run_str .. envrc_vars .. ";"
+			print (run_str)
+		else
+			io.stderr:write (cur_conf .. "/" .. sys_config_name .. " is broken, abort\n")
 		end
-
-		--io.stderr:write (run_str .. "\n")
-		print (run_str)
 	end --else do nothing
 else													--if sys_env_path is defined
 	cur_conf = find_conf()
@@ -154,25 +167,23 @@ else													--if sys_env_path is defined
 		
 		run_str = run_str .. "unset " .. sys_env_backup .. ";"
 		run_str = run_str .. "unset " .. sys_env_path .. ";"
-		--io.stderr:write (run_str .. "\n")
 		print (run_str)
 	else
 		if  cur_conf ~= env_cur_dir  then -- setup new .envrc
 			
 			io.stderr:write("swithing env from " .. env_cur_dir .. " to " .. cur_conf .. "\n")
 
-			envrc_vars = read_conf(cur_conf .. "/" .. sys_config_name)
 			run_str = run_str .. restore_env()
 
+			envrc_vars = read_conf(cur_conf .. "/" .. sys_config_name)
 			--load new_env
-			for k,v in pairs(envrc_vars) do
-				run_str = run_str .. " export "  .. k .. "=" .. v .. ";"
+			if envrc_vars ~= nil then
+				run_str = run_str .. envrc_vars .. ";"
+				run_str = run_str .. " export " .. sys_env_path .. "=" .. cur_conf .. ";" --and define sys_env_path
+				print (run_str)
+			else
+				io.stderr:write (cur_conf .. "/" .. sys_config_name .. " is broken, abort\n")
 			end
-			run_str = run_str .. " export " .. sys_env_path .. "=" .. cur_conf .. ";" --and define sys_env_path
-	
-	--		io.stderr:write (run_str .. "\n")
-			print (run_str)
-
 		end
 	end
 end
