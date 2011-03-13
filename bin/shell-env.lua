@@ -18,7 +18,7 @@ read_conf = function(filename)
 end
 
 read_conf_old = function(filename) -- return variables table
-	
+
 	--Waring, this function wrong read variables  whose cosist \n
 	local f=io.open(filename)
 	envs = {}
@@ -128,7 +128,7 @@ restore_env = function()
 	df = diff_vars(cur_env, new_env)
 	for k,v in pairs(df) do
 		if df[k] then
-			st = st .. " export "  .. k .. "=" .. v .. ";"
+			st = st .. " export "  .. k .. "=" .. "\'" .. v .. "\'" .. ";"
 		else 
 			st = st .. "unset " .. k .. ";"
 		end
@@ -140,20 +140,23 @@ end
 env_cur_dir =  posix.getenv (sys_env_path)
 run_str = ""
 if env_cur_dir == nil then		--if sys_env_path if not defined
-	cur_conf = find_conf() -- search it
+ 	cur_conf = find_conf() -- search it
 	if cur_conf then -- if found then load
 		io.stderr:write("load envrc from " .. cur_conf .. "\n")
 		changed = true
 		--save vars
 		env = posix.getenv()
 		str = serial_vars(env)
-		run_str = " export " .. sys_env_backup .. "=\"" .. str .. "\"" .. ";"
+
+
+		run_str = " export " .. sys_env_backup .. "=\"" .. str .. "\"" .. ";" -- CHECKME
 		run_str = run_str .. " export " .. sys_env_path .. "=" .. cur_conf .. ";" --and define sys_env_path
 		envrc_vars = read_conf(cur_conf .. "/" .. sys_config_name )
 		--load new_env
 		if envrc_vars ~= nil then
 			run_str = run_str .. envrc_vars .. ";"
 			print (run_str)
+
 		else
 			io.stderr:write (cur_conf .. "/" .. sys_config_name .. " is broken, abort\n")
 		end
@@ -167,6 +170,7 @@ else													--if sys_env_path is defined
 		
 		run_str = run_str .. "unset " .. sys_env_backup .. ";"
 		run_str = run_str .. "unset " .. sys_env_path .. ";"
+		--io.stderr:write (run_str .. "\n")
 		print (run_str)
 	else
 		if  cur_conf ~= env_cur_dir  then -- setup new .envrc
