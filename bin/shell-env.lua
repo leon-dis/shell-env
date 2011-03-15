@@ -2,6 +2,12 @@
 
 require "posix"
 
+--get path of running application to load base64 module
+lpath=posix.dirname(arg[0])
+package.path=package.path .. ";" .. lpath .. "/?.lua"
+require "base64"
+
+
 sys_config_name = ".envrc"
 sys_env_path = "SHELLENV" -- store current config path
 sys_env_backup = "SHELLENV_BACKUP"
@@ -67,11 +73,14 @@ serial_vars = function (env)
 			res_str = res_str .. k .. "," .. string.len(v) .. "," .. v .. ";" 
 		end
 	end
-	return res_str
+
+	str=enc(res_str)
+	return str
 end
 
-deserial_vars = function (str) --TODO do it in C
+deserial_vars = function (encstr) --TODO do it in C
 	
+	str=dec(encstr)
 	start_pos = 1 
 	pos = 0 
 	end_pos = 0
