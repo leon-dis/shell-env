@@ -14,10 +14,10 @@ sys_env_backup = "SHELLENV_BACKUP"
 
 read_conf = function(filename)
 	--first test config for correct
-	run_test = "/bin/sh -c \"set -e; . " .. filename .. "\""
+	run_test = "/bin/sh -c \"set -e; . \'" .. filename .. "\'\""
 	res = os.execute(run_test)
 	if res == 0 then
-		return ". " .. filename
+		return ". \'" .. filename .. "\'"
 	else
 		return nil
 	end
