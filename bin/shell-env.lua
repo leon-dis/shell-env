@@ -159,7 +159,7 @@ if env_cur_dir == nil then		--if sys_env_path if not defined
 
 
 		run_str = " export " .. sys_env_backup .. "=\"" .. str .. "\"" .. ";" -- CHECKME
-		run_str = run_str .. " export " .. sys_env_path .. "=" .. cur_conf .. ";" --and define sys_env_path
+		run_str = run_str .. " export " .. sys_env_path .. "=\"" .. cur_conf .. "\";" --and define sys_env_path
 		envrc_vars = read_conf(cur_conf .. "/" .. sys_config_name )
 		--load new_env
 		if envrc_vars ~= nil then
@@ -192,7 +192,7 @@ else													--if sys_env_path is defined
 			--load new_env
 			if envrc_vars ~= nil then
 				run_str = run_str .. envrc_vars .. ";"
-				run_str = run_str .. " export " .. sys_env_path .. "=" .. cur_conf .. ";" --and define sys_env_path
+				run_str = run_str .. " export " .. sys_env_path .. "=\"" .. cur_conf .. "\";" --and define sys_env_path
 				print (run_str)
 			else
 				io.stderr:write (cur_conf .. "/" .. sys_config_name .. " is broken, abort\n")
